@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Ball Snake Draft Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom right, #e0f7fa, #b2ebf2);
+            color: #333;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+            color: #00796b;
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .team, .character-list {
+            border: 2px solid #00796b;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 30%;
+            padding: 20px;
+            margin: 10px;
+            position: relative;
+        }
+        .character-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .character-item {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+            background-color: #b2dfdb;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .character-item:hover {
+            background-color: #00796b;
+            color: white;
+        }
+        .selected {
+            background-color: #ffccbc;
+        }
+        .drafted-characters {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .draft-button {
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: block;
+            text-align: center;
+        }
+        .draft-button:hover {
+            background-color: #004d40;
+        }
+        #log {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #d32f2f;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dragon Ball Snake Draft Game</h1>
+    <div class="container">
+        <div class="character-list" id="character-list">
+            <h2>Available Characters</h2>
+            <ul id="characters"></ul>
+        </div>
+        <div class="team" id="team1">
+            <h2>Team 1</h2>
+            <ul class="drafted-characters" id="team1-list"></ul>
+        </div>
+        <div class="team" id="team2">
+            <h2>Team 2</h2>
+            <ul class="drafted-characters" id="team2-list"></ul>
+        </div>
+        <div class="team" id="team3">
+            <h2>Team 3</h2>
+            <ul class="drafted-characters" id="team3-list"></ul>
+        </div>
+    </div>
+    <button class="draft-button" id="draft-btn">Draft Character</button>
+    <div id="log"></div>
+
+    <script>
+        const characters = [
+            {name: "Goku"},
+            {name: "Vegeta"},
+            {name: "Gohan"},
+            {name: "Piccolo"},
+            {name: "Krillin"},
+            {name: "Trunks"},
+            {name: "Android 18"},
+            {name: "Frieza"},
+            {name: "Majin Buu"},
+            {name: "Cell"},
+            {name: "Yamcha"},
+            {name: "Tien Shinhan"},
+            {name: "Chiaotzu"},
+            {name: "Bulma"},
+            {name: "Master Roshi"},
+            {name: "Chi-Chi"},
+            {name: "Mr. Satan"},
+            {name: "Dende"},
+            {name: "Videl"},
+            {name: "Raditz"},
+            {name: "Nappa"},
+            {name: "Bardock"},
+            {name: "King Vegeta"},
+            {name: "Goten"},
+            {name: "Cabba"},
+            {name: "Kale"},
+            {name: "Caulifla"},
+            {name: "Captain Ginyu"},
+            {name: "Jeice"},
+            {name: "Burter"},
+            {name: "Recoome"},
+            {name: "Guldo"},
+            {name: "Zarbon"},
+            {name: "Dodoria"},
+            {name: "Babidi"},
+            {name: "Dabura"},
+            {name: "Broly"},
+            {name: "Beerus"},
+            {name: "Whis"},
+            {name: "Shenron"},
+        ];
+
+        let teams = [[], [], []];
+        let currentTeam = 0;
+        let selectedCharacterIndex = null;
+
+        function populateCharacterList() {
+            const characterList = document.getElementById('characters');
+            characters.forEach((character, index) => {
+                const li = document.createElement('li');
+                li.className = 'character-item';
+                li.textContent = character.name;
+                li.onclick = () => selectCharacter(index);
+                characterList.appendChild(li);
+            });
+        }
+
+        function selectCharacter(index) {
+            const characterItems = document.querySelectorAll('.character-item');
+            characterItems.forEach((item) => {
+                item.classList.remove('selected');
+            });
+            characterItems[index].classList.add('selected');
+            selectedCharacterIndex = index;
+        }
+
+        function draftCharacter() {
+            if (selectedCharacterIndex === null) {
+                document.getElementById('log').innerText = "Please select a character to draft.";
+                return;
+            }
+
+            const character = characters[selectedCharacterIndex];
+
+            if (teams.some(team => team.includes(character.name))) {
+                document.getElementById('log').innerText = `${character.name} has already been drafted.`;
+                return;
+            }
+
+            teams[currentTeam].push(character.name);
+            const teamList = document.getElementById(`team${currentTeam + 1}-list`);
+            const li = document.createElement('li');
+            li.innerText = character.name;
+            teamList.appendChild(li);
+
+            const characterList = document.getElementById('characters');
+            characterList.removeChild(characterList.children[selectedCharacterIndex]);
+
+            selectedCharacterIndex = null;
+
+            // Snake draft logic
+            if (currentTeam === teams.length - 1) {
+                currentTeam = 0; // Go back to first team
+            } else {
+                currentTeam += 1; // Move to the next team
+            }
+
+            document.getElementById('log').innerText = `${character.name} drafted to Team ${currentTeam + 1}`;
+        }
+
+        document.getElementById('draft-btn').addEventListener('click', draftCharacter);
+        populateCharacterList();
+    </script>
+</body>
+</html>
